@@ -17,12 +17,30 @@ public class CRUDUtilsTest {
     * */
     @Test
     public void testInsert(){
+        //创建对象
         CRUDUtils<User> crudUtils = new CRUDUtils<>(User.class);
 
         String sql="insert into user( username, password, phone, email, gender, user_status) VALUES (?,?,?,?,?,?);";
 
+        //指定预编译sql语句以及参数
         Object[] params = {"张三11111", "1233211", "18718788888", "zs11111@qq.com", 1, 1};
 
         System.out.println(crudUtils.insert(sql, params));
+    }
+
+    /**
+    * 测试更新数据
+    * */
+    @Test
+    public void testUpdate(){
+        //创建对象
+        CRUDUtils<User> crudUtils = new CRUDUtils<>(User.class);
+
+        String sql="update user set username=? where user_id=?;";
+
+        //指定预编译sql语句以及参数
+        Object[] params = {"张三1111111",3};
+
+        System.out.println(crudUtils.update(sql, params));
     }
 }
