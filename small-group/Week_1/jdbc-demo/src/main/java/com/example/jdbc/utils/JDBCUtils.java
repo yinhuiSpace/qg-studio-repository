@@ -3,6 +3,8 @@ package com.example.jdbc.utils;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.Properties;
 
 /**
@@ -64,5 +66,36 @@ public class JDBCUtils {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+
+    /**
+     * 关闭连接，释放资源
+     */
+    public static void closeAll(Connection connection, Statement statement, ResultSet resultSet) {
+
+        try {
+            //需要遵循先开后关的原则
+            //注意：只有对象不为空时，才执行关闭
+            //关闭结果集对象
+            if (resultSet != null) {
+                resultSet.close();
+            }
+
+            //关闭sql语句对象
+            if (statement != null) {
+                statement.close();
+            }
+
+            //数据库连接对象
+            if (connection != null) {
+                connection.close();
+            }
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+
     }
 }
