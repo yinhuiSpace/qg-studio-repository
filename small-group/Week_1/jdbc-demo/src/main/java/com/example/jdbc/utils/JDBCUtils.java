@@ -18,7 +18,7 @@ public class JDBCUtils {
     //用于封装配置文件中的配置项
     private static final Properties PROPERTIES = new Properties();
 
-    //本地线程对象，用于同一个线程内共享数据库连接
+    //本地线程对象，用于同一个线程内共享数据库连接，线程封闭
     private static final ThreadLocal<Connection> threadLocal = new ThreadLocal<>();
 
     /**
@@ -68,6 +68,57 @@ public class JDBCUtils {
         }
     }
 
+    /**
+     * 开启事务
+     */
+    public static void begin() {
+
+        try {
+            //关闭自动提交
+            Connection connection = getConnection();
+
+            connection.setAutoCommit(false);
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * 所有sql成功，手动提交
+     */
+    public static void commit() {
+
+        Connection connection = null;
+
+        try {
+            //手动提交
+            connection = getConnection();
+
+            connection.commit();
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    /**
+     * 有sql执行异常，全部sql操作回滚
+     */
+    public static void rollback() {
+
+        Connection connection = null;
+
+        try {
+            //有sql执行异常，回滚所有sql操作
+            connection = getConnection();
+            connection.rollback();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 
     /**
      * 关闭连接，释放资源
@@ -90,6 +141,9 @@ public class JDBCUtils {
             //数据库连接对象
             if (connection != null) {
                 connection.close();
+
+                //销毁封闭线程对象
+                threadLocal.remove();
             }
 
         } catch (Exception e) {
