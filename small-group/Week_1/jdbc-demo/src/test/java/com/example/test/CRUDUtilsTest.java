@@ -69,4 +69,17 @@ public class CRUDUtilsTest {
 
         System.out.println(crudUtils.selectById(sql, 3));
     }
+
+    /**
+    * 测试批量查询数据
+    * */
+    @Test
+    public void testSelectAll(){
+        //创建对象
+        CRUDUtils<User> crudUtils = new CRUDUtils<>(User.class);
+
+        String sql="select * from user;";
+
+        System.out.println(crudUtils.selectList(sql, null));
+    }
 }
