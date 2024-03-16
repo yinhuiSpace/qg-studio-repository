@@ -43,4 +43,17 @@ public class CRUDUtilsTest {
 
         System.out.println(crudUtils.update(sql, params));
     }
+
+    /**
+    * 测试根据索引删除数据
+    * */
+    @Test
+    public void testDeleteById(){
+        //创建对象
+        CRUDUtils<User> crudUtils = new CRUDUtils<>(User.class);
+
+        String sql="delete from user where user_id=?;";
+
+        System.out.println(crudUtils.deleteById(sql, 5));
+    }
 }

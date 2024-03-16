@@ -93,4 +93,36 @@ public class CRUDUtils<T> {
 
         return 0;
     }
+
+    /**
+    * 根据索引删除数据
+    * */
+    public int deleteById(String sql, int id) {
+
+        //数据库连接
+        Connection connection = null;
+
+        //预编译sql语句
+        PreparedStatement preparedStatement = null;
+
+        try {
+            //从数据库连接池中获得数据库连接
+            connection = JDBCUtils.getConnection();
+            //获得sql预编译对象
+            preparedStatement = connection.prepareStatement(sql);
+            //将传入的参数依次补充到预编译sql语句中
+            preparedStatement.setInt(1, id);
+
+            //依据tcp协议发送请求，执行sql语句，并接收返回结果
+            int result = preparedStatement.executeUpdate();
+            return result;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            //必须要归还数据库连接回连接池
+            JDBCUtils.closeAll(connection, preparedStatement, null);
+        }
+
+        return 0;
+    }
 }
