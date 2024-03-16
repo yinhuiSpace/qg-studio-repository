@@ -1,6 +1,7 @@
 package com.example.jdbc.utils;
 
 import com.example.jdbc.utils.resultlMapper.RowMapper;
+import com.example.jdbc.utils.wrapper.ConditionWrapper;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -62,8 +63,8 @@ public class CRUDUtils<T> {
     }
 
     /**
-    * 更新一条数据
-    * */
+     * 更新一条数据
+     */
     public int update(String sql, Object... params) {
 
         //数据库连接
@@ -99,8 +100,8 @@ public class CRUDUtils<T> {
     }
 
     /**
-    * 根据索引删除数据
-    * */
+     * 根据索引删除数据
+     */
     public int deleteById(String sql, int id) {
 
         //数据库连接
@@ -132,8 +133,8 @@ public class CRUDUtils<T> {
 
 
     /**
-    * 根据索引查找数据
-    * */
+     * 根据索引查找数据
+     */
     public T selectById(String sql, int id) {
         //数据库连接
         Connection connection = null;
@@ -154,7 +155,7 @@ public class CRUDUtils<T> {
             ResultSet resultSet = preparedStatement.executeQuery();
 
             //创建用于resultSet解析的对象
-            RowMapper<T> rowMapper = new RowMapper<>(entityClazz,resultSet);
+            RowMapper<T> rowMapper = new RowMapper<>(entityClazz, resultSet);
             try {
                 //解析resultSet，并且封装成列表
                 T entity = rowMapper.rowMap();
@@ -175,8 +176,8 @@ public class CRUDUtils<T> {
     }
 
     /**
-    * 根据条件批量查询数据
-    * */
+     * 根据条件批量查询数据
+     */
     public List<T> selectList(String sql, List<Object> params) {
 
         //数据库连接
@@ -192,10 +193,10 @@ public class CRUDUtils<T> {
             preparedStatement = connection.prepareStatement(sql);
 
             //补充参数
-            if (params!=null&&params.size()>0){
+            if (params != null && params.size() > 0) {
                 //循环拼接
                 for (int i = 0; i < params.size(); i++) {
-                    preparedStatement.setObject(i+1,params.get(i));
+                    preparedStatement.setObject(i + 1, params.get(i));
                 }
             }
 
@@ -203,7 +204,7 @@ public class CRUDUtils<T> {
             ResultSet resultSet = preparedStatement.executeQuery();
 
             //创建用于resultSet解析的对象
-            RowMapper<T> rowMapper = new RowMapper<>(entityClazz,resultSet);
+            RowMapper<T> rowMapper = new RowMapper<>(entityClazz, resultSet);
             //解析resultSet，并且封装成列表
             List<T> list = rowMapper.rowListMap();
 
@@ -218,5 +219,27 @@ public class CRUDUtils<T> {
         }
 
         return null;
+    }
+
+    /**
+     * 根据复杂条件批量查询：分页查询，动态查询条件
+     */
+    public List<T> selectList(String sql, ConditionWrapper queryWrapper, Integer flag) {
+
+        //去掉非法字符
+        sql = sql.replace(";", " ");
+
+        //拼接完整sql语句
+        StringBuilder sqlBuilder = new StringBuilder(sql);
+
+
+        sqlBuilder.append(queryWrapper.buildAllQuery());
+
+        //获取参数列表
+
+
+        //调用普通查找sql
+        return selectList(sqlBuilder.toString(), queryWrapper.getParameterList());
+
     }
 }

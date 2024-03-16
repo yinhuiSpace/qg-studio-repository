@@ -1,6 +1,7 @@
 package com.example.test;
 
 import com.example.jdbc.utils.CRUDUtils;
+import com.example.jdbc.utils.wrapper.ConditionWrapper;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -81,5 +82,23 @@ public class CRUDUtilsTest {
         String sql="select * from user;";
 
         System.out.println(crudUtils.selectList(sql, null));
+    }
+
+    /**
+    * 测试动态条件查询以及分页查询
+    * */
+    @Test
+    public void testSelectByPage(){
+        //创建对象
+        CRUDUtils<User> crudUtils = new CRUDUtils<>(User.class);
+
+        String sql="select * from user;";
+
+        ConditionWrapper conditionWrapper = new ConditionWrapper();
+
+        //构建查询条件
+        conditionWrapper = conditionWrapper.eq("username", "王五");
+
+        System.out.println(crudUtils.selectList(sql, conditionWrapper,null));
     }
 }
