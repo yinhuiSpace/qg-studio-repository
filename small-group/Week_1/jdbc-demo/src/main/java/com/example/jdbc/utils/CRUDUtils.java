@@ -1,7 +1,10 @@
 package com.example.jdbc.utils;
 
+import com.example.jdbc.utils.resultlMapper.RowMapper;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
@@ -14,9 +17,9 @@ import java.sql.SQLException;
 public class CRUDUtils<T> {
 
     //实体类字节码对象
-    private Class<?> entityClazz;
+    private Class<T> entityClazz;
 
-    public CRUDUtils(Class<?> entityClazz) {
+    public CRUDUtils(Class<T> entityClazz) {
         this.entityClazz = entityClazz;
     }
 
@@ -124,5 +127,49 @@ public class CRUDUtils<T> {
         }
 
         return 0;
+    }
+
+
+    /**
+    * 根据索引查找数据
+    * */
+    public T selectById(String sql, int id) {
+        //数据库连接
+        Connection connection = null;
+
+        //预编译sql语句
+        PreparedStatement preparedStatement = null;
+
+        //创建用于resultSet解析的对象
+        RowMapper<T> rowMapper = new RowMapper<>();
+
+
+        try {
+            //从数据库连接池中获得数据库连接
+            connection = JDBCUtils.getConnection();
+            //获得sql预编译对象
+            preparedStatement = connection.prepareStatement(sql);
+            //补充参数
+            preparedStatement.setObject(1, id);
+
+            //依据tcp协议发送请求，执行sql语句，并接收返回结果
+            ResultSet resultSet = preparedStatement.executeQuery();
+            try {
+                //解析resultSet，并且封装成列表
+                T entity = rowMapper.rowMap(entityClazz, resultSet);
+                return entity;
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            //必须要归还数据库连接回连接池
+            JDBCUtils.closeAll(connection, preparedStatement, null);
+        }
+
+        return null;
     }
 }

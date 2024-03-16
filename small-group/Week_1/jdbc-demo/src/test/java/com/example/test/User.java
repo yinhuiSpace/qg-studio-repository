@@ -11,7 +11,7 @@ import java.util.Objects;
  */
 public class User {
 
-    private int user_id;
+    private int userId;
 
     private String username;
 
@@ -25,8 +25,11 @@ public class User {
 
     private short userStatus;
 
-    public User(int user_id, String username, String password, String phone, String email, short gender, short userStatus) {
-        this.user_id = user_id;
+    public User() {
+    }
+
+    public User(int userId, String username, String password, String phone, String email, short gender, short userStatus) {
+        this.userId = userId;
         this.username = username;
         this.password = password;
         this.phone = phone;
@@ -36,11 +39,11 @@ public class User {
     }
 
     public int getUser_id() {
-        return user_id;
+        return userId;
     }
 
-    public void setUser_id(int user_id) {
-        this.user_id = user_id;
+    public void setUser_id(int userId) {
+        this.userId = userId;
     }
 
     public String getUsername() {
@@ -94,7 +97,7 @@ public class User {
     @Override
     public String toString() {
         return "User{" +
-                "user_id=" + user_id +
+                "userId=" + userId +
                 ", username='" + username + '\'' +
                 ", password='" + password + '\'' +
                 ", phone='" + phone + '\'' +
@@ -109,11 +112,11 @@ public class User {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return user_id == user.user_id && gender == user.gender && userStatus == user.userStatus && Objects.equals(username, user.username) && Objects.equals(password, user.password) && Objects.equals(phone, user.phone) && Objects.equals(email, user.email);
+        return userId == user.userId && gender == user.gender && userStatus == user.userStatus && Objects.equals(username, user.username) && Objects.equals(password, user.password) && Objects.equals(phone, user.phone) && Objects.equals(email, user.email);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(user_id, username, password, phone, email, gender, userStatus);
+        return Objects.hash(userId, username, password, phone, email, gender, userStatus);
     }
 }

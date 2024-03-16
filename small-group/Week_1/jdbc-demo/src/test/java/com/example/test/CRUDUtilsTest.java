@@ -56,4 +56,17 @@ public class CRUDUtilsTest {
 
         System.out.println(crudUtils.deleteById(sql, 5));
     }
+
+    /**
+    * 测试根据主键查找
+    * */
+    @Test
+    public void testSelectById(){
+        //创建对象
+        CRUDUtils<User> crudUtils = new CRUDUtils<>(User.class);
+
+        String sql="select * from user where user_id=?;";
+
+        System.out.println(crudUtils.selectById(sql, 3));
+    }
 }
