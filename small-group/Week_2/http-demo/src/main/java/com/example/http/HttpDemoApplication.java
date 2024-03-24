@@ -34,4 +34,18 @@ public class HttpDemoApplication {
             threadPool.execute(new SocketProcessor(socket));
         }
     }
+
+
+    public static void main(String[] args) {
+
+        try {
+            //阻塞等待客户端请求
+            HttpDemoApplication application = new HttpDemoApplication();
+
+            application.waitAndGetReq();
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

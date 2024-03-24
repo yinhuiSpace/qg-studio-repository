@@ -1,5 +1,6 @@
 package com.example.http.processor;
 
+import com.alibaba.fastjson2.JSONObject;
 import com.example.http.request.HttpRequest;
 
 import java.io.BufferedReader;
@@ -39,7 +40,7 @@ public class SocketProcessor implements Runnable{
 
     @Override
     public void run() {
-
+        processReq();
     }
 
     /**
@@ -47,12 +48,18 @@ public class SocketProcessor implements Runnable{
     * */
     public void processReq(){
 
-        request=new HttpRequest();
+        try {
+            request=new HttpRequest();
 
-        //初步依据http格式，解析并划分请求组成部分，分不同部分处理
+            //初步依据http格式，解析并划分请求组成部分，分不同部分处理
+            parseReq();
 
+            //解析出请求行
+            getReqLine();
 
-        //解析出请求行
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
     }
 
@@ -84,7 +91,7 @@ public class SocketProcessor implements Runnable{
 
 
     /**
-    * 解析请求头
+    * 解析请求行
     * */
     private void getReqLine() {
         //解析请求行，先以空格分割，按照http格式，一共存在三部分：请求方式，请求路径（get请求会在路径后拼接参数），请求协议
@@ -106,15 +113,36 @@ public class SocketProcessor implements Runnable{
                 String[] param = params.split("&");
                 for (String entry : param) {
                     String[] entryArr = entry.split("=");
-                    paramMap.put(entryArr[0], entryArr[1]);
+                    request.getParams().put(entryArr[0], entryArr[1]);
                 }
             }
-
-            System.out.println(paramMap);
         } else {
             request.setUrl(lineSplit[1]);
         }
         //第三个是请求协议
         request.setProtocol(lineSplit[2]);
     }
+
+    /**
+    * 解析请求头
+    * */
+
+
+    /**
+    * 解析请求体
+    * */
+    private static void getReqBody(String dataStr) {
+        //获取请求体
+        //提取请求体部分的json字符串，以大括号分割
+        String[] jsonStr = dataStr.split("\\{");
+
+        if (jsonStr.length > 1) {
+            Object parsedObject = JSONObject.parseObject("{" + jsonStr[1]);
+
+            System.out.println(parsedObject);
+        }
+    }
+
+
+
 }
