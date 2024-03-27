@@ -64,20 +64,53 @@
       </span>
   </el-dialog>
 
-  <el-dialog :model-value="getVis" title="get" :show-close="false" :close-on-click-modal="false">
+  <el-dialog :model-value="deleteVis" title="delete" :show-close="false" :close-on-click-modal="false">
 
     <el-form class="inner-form" :model="user">
       <el-form-item label="用户名:">
         <el-input v-model="user.username"></el-input>
       </el-form-item>
 
+      <el-form-item label="密码:">
+        <el-input v-model="user.password"></el-input>
+      </el-form-item>
+
+      <el-form-item label="年龄:">
+        <el-input v-model="user.age"></el-input>
+      </el-form-item>
+
     </el-form>
 
     <span slot="footer" class="dialog-footer">
-        <el-button type="danger" size="small" @click="getVis = false">关闭</el-button>
-        <el-button type="primary" size="small" @click="sendGetRequest">保存</el-button>
+        <el-button type="danger" size="small" @click="deleteVis = false">关闭</el-button>
+        <el-button type="primary" size="small" @click="sendDeleteRequest">发送</el-button>
       </span>
   </el-dialog>
+
+  <el-dialog :model-value="deleteVis" title="put" :show-close="false" :close-on-click-modal="false">
+
+    <el-form class="inner-form" :model="user">
+      <el-form-item label="用户名:">
+        <el-input v-model="user.username"></el-input>
+      </el-form-item>
+
+      <el-form-item label="密码:">
+        <el-input v-model="user.password"></el-input>
+      </el-form-item>
+
+      <el-form-item label="年龄:">
+        <el-input v-model="user.age"></el-input>
+      </el-form-item>
+
+    </el-form>
+
+    <span slot="footer" class="dialog-footer">
+        <el-button type="danger" size="small" @click="deleteVis = false">关闭</el-button>
+        <el-button type="primary" size="small" @click="sendDeleteRequest">发送</el-button>
+      </span>
+  </el-dialog>
+
+
 
 
 </template>
