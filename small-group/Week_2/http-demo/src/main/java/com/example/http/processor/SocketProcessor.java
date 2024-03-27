@@ -5,10 +5,9 @@ import com.example.http.request.HttpRequest;
 import com.example.http.response.HttpResponse;
 import com.example.http.result.Result;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.Socket;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,6 +34,8 @@ public class SocketProcessor implements Runnable {
 
     private HttpRequest request;
 
+    private OutputStream outputStream;
+
 
     public SocketProcessor(Socket socket) {
         this.socket = socket;
@@ -56,15 +57,6 @@ public class SocketProcessor implements Runnable {
             //初步依据http格式，解析并划分请求组成部分，分不同部分处理
             parseReq();
 
-            //解析出请求行
-            getReqLine();
-
-            //解析请求头
-            getHeader();
-
-            //封装响应对象并返回给客户端
-            sendResp();
-
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -76,8 +68,7 @@ public class SocketProcessor implements Runnable {
      */
     public void parseReq() throws Exception {
         //接收请求数据
-        InputStreamReader inputStreamReader = new InputStreamReader(socket.getInputStream());
-        BufferedReader reader = new BufferedReader(inputStreamReader);
+        BufferedReader reader = new BufferedReader( new InputStreamReader(socket.getInputStream()));
 
         //读取字符流
         //设置中转站
@@ -85,6 +76,12 @@ public class SocketProcessor implements Runnable {
         reader.read(req);
         //处理字符数组
         String reqStr = new String(req);
+
+        if (reqStr==null){
+            return;
+        }
+
+        outputStream=socket.getOutputStream();
         //以换行符分割
         String[] reqInLines = reqStr.split("[\r\n]");
         //现在就从数据流中解析出一行一行的数据了
@@ -96,19 +93,33 @@ public class SocketProcessor implements Runnable {
             String reqBodyStr = reqStr.split("\\{")[1];
 
             reqBody = "{" + reqBodyStr;
+
+            //解析请求体
+            getReqBody();
         }
 
         //夹在中间的就是请求头了
 
         if (reqStr.contains("{")) {
             reqHeader = reqStr.substring(reqStr.indexOf("\r\n") + 1, reqStr.indexOf("{"));
-
-            //解析请求体
-            getReqBody();
+        }else {
+            reqHeader=reqStr.substring(reqStr.indexOf("\r\n")+1);
         }
+
+        //解析出请求行
+        getReqLine();
+
+        //解析请求头
+        getHeader();
+
+        //封装响应对象并返回给客户端
+        sendResp();
     }
 
     private void getHeader() {
+        if (reqHeader==null||reqHeader.isEmpty()){
+            return;
+        }
         //提取出请求头中的键值对
         String[] paramEntry = reqHeader.split("[\r\n]");
 
@@ -136,8 +147,14 @@ public class SocketProcessor implements Runnable {
      * 解析请求行
      */
     private void getReqLine() {
+        if (reqLine==null||reqLine.isEmpty()){
+            return;
+        }
         //解析请求行，先以空格分割，按照http格式，一共存在三部分：请求方式，请求路径（get请求会在路径后拼接参数），请求协议
         String[] lineSplit = reqLine.split(" ");
+        if (lineSplit.length<2){
+            return;
+        }
         //第一个是请求方法
         request.setMethod(lineSplit[0]);
         //第二个是请求路径，还可能有get请求的参数
@@ -190,12 +207,18 @@ public class SocketProcessor implements Runnable {
      */
     public void sendResp() throws Exception {
 
-        //封装响应对象
-        HttpResponse response = new HttpResponse();
+        if (request.getProtocol()!=null){
+            System.out.println(request);
+            //封装响应对象
+            HttpResponse response = new HttpResponse(request,outputStream,socket);
 
-        PrintWriter out = response.getWriter();
+            PrintWriter out = response.getWriter();
 
-        out.println(JSONObject.toJSONString(Result.success(request)));
+            out.println(JSONObject.toJSONString(Result.success(request)));
+
+            response.complete();
+        }
+
     }
 
 

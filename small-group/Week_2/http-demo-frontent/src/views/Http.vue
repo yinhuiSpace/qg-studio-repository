@@ -110,7 +110,23 @@
       </span>
   </el-dialog>
 
+  <el-dialog :model-value="requestVis" title="接收到的信息" :show-close="false" :close-on-click-modal="false">
 
+    <el-card>
+      <div slot="header">
+        <h3>服务端响应回来的信息</h3>
+      </div>
+      <div>
+        <p><strong>状态码：</strong> {{ request.code }}</p>
+        <p><strong>描述信息：</strong> {{ request.msg }}</p>
+        <p><strong>响应数据：</strong> {{ request.data }}</p>
+      </div>
+    </el-card>
+
+    <span slot="footer" class="dialog-footer">
+        <el-button type="danger" size="small" @click="requestVis = false">关闭</el-button>
+    </span>
+  </el-dialog>
 
 
 </template>
@@ -126,48 +142,60 @@ export default {
   name: "Http",
   methods: {
     sendGetRequest() {
-      getReq("/user",{
-        username:"zs"
+      getReq("/user", {
+        username: "zs"
       }).then(data => {
         this.$message.success("发送成功")
+        this.requestVis = true
+        this.request=data.data
       })
     },
     sendPostRequest() {
-      postReq('/user/login',{
-        username:this.user.username,
-        password:this.user.password
+      postReq('/user/login', {
+        username: this.user.username,
+        password: this.user.password
       }).then(data => {
         this.$message.success("发送成功")
+        this.requestVis = true
+        this.request=data.data
       })
     },
     sendPutRequest() {
-      putReq('/user',{
-        username:this.user.username,
-        password:this.user.password,
-        age:this.user.age
+      putReq('/user', {
+        username: this.user.username,
+        password: this.user.password,
+        age: this.user.age
       }).then(data => {
         this.$message.success("发送成功")
+        this.requestVis = true
+        this.request=data.data
       })
     },
     sendDeleteRequest() {
       deleteReq('/user').then(data => {
         this.$message.success("发送成功")
+        this.requestVis = true
+        this.request=data.data
       })
     },
     sendPatchRequest() {
       patchReq('/user').then(data => {
         this.$message.success("发送成功")
+        this.requestVis = true
+        this.request=data.data
       })
     }
   },
-  data(){
-    return{
-      user:{},
-      getVis:false,
-      postVis:false,
-      putVis:false,
-      deleteVis:false,
-      patchVis:false,
+  data() {
+    return {
+      user: {},
+      request: {},
+      getVis: false,
+      postVis: false,
+      putVis: false,
+      deleteVis: false,
+      patchVis: false,
+      requestVis: false
     }
   }
 };

@@ -72,6 +72,28 @@ public class HttpResponse {
     //客户端接受点
     private Socket socket;
 
+    public HttpResponse(HttpRequest request, Socket socket) {
+        try {
+            this.request = request;
+            this.socket = socket;
+            this.socketOutputStream=socket.getOutputStream();
+            //默认是成功响应
+            setStatus(OK);
+            setMsg("ok");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public HttpResponse(HttpRequest request, OutputStream socketOutputStream, Socket socket) {
+        this.request = request;
+        this.socketOutputStream = socketOutputStream;
+        this.socket = socket;
+        //默认是成功响应
+        setStatus(OK);
+        setMsg("ok");
+    }
+
     public HttpResponse() {
     }
 
@@ -181,9 +203,6 @@ public class HttpResponse {
         //发送响应体
         writeRespBody();
 
-        //关闭通道
-        socketOutputStream.close();
-        socket.close();
     }
 
     /**
