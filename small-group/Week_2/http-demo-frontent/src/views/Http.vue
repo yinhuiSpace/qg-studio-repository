@@ -87,7 +87,7 @@
       </span>
   </el-dialog>
 
-  <el-dialog :model-value="deleteVis" title="put" :show-close="false" :close-on-click-modal="false">
+  <el-dialog :model-value="patchVis" title="patch" :show-close="false" :close-on-click-modal="false">
 
     <el-form class="inner-form" :model="user">
       <el-form-item label="用户名:">
@@ -105,8 +105,8 @@
     </el-form>
 
     <span slot="footer" class="dialog-footer">
-        <el-button type="danger" size="small" @click="deleteVis = false">关闭</el-button>
-        <el-button type="primary" size="small" @click="sendDeleteRequest">发送</el-button>
+        <el-button type="danger" size="small" @click="patchVis = false">关闭</el-button>
+        <el-button type="primary" size="small" @click="sendPatchRequest">发送</el-button>
       </span>
   </el-dialog>
 
